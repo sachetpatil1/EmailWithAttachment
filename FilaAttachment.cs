@@ -1,11 +1,14 @@
+using System.Web.Mvc;
+using System.IO;
+
 [HttpPost]
 public ActionResult SendEmail()
 {
     try
     {
-        HttpFileCollectionBase files = Request.Files;
+        System.Web.HttpFileCollectionBase files = Request.Files;
         
-        MailMessage _objMail = new MailMessage();
+        System.Net.Mail.MailMessage _objMail = new System.Net.Mail.MailMessage();
 
         // Set properties needed for the email
         _objMail.From = new MailAddress(EmailFrom);
@@ -46,7 +49,7 @@ public ActionResult SendEmail()
 
         for (int i = 0; i < files.Count; i++)
         {
-            HttpPostedFileBase file = files[i];
+            System.Web.HttpPostedFileBase file = files[i];
 
             byte[] buffer = new byte[16 * 1024];
             using (MemoryStream ms = new MemoryStream())
@@ -61,14 +64,6 @@ public ActionResult SendEmail()
 
             System.Net.Mail.Attachment attach = new System.Net.Mail.Attachment(buffer, file.FileName);
             _objMail.Attachments.Add(attach);
-        }
-
-        if (EmailAttachments != null)
-        {
-            foreach (EmailAttachment ma in EmailAttachments)
-            {
-                _objMail.Attachments.Add(ma.File);
-            }
         }
         // Set the mail object's smtpserver property
         SmtpClient smtp = GetSmtp();
