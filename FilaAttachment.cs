@@ -13,7 +13,7 @@ public ActionResult SendEmail()
 
         System.Net.Mail.MailMessage _objMail = new System.Net.Mail.MailMessage();
 
-        string FromId = "sachet.patil.7@gmail.com";
+        string FromId = "SendFromEmail@xxx.com";
 
         // Set properties needed for the email
         _objMail.From = new MailAddress(FromId);
@@ -76,7 +76,7 @@ public ActionResult SendEmail()
             smtpClient.EnableSsl = true;
             smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
             smtpClient.UseDefaultCredentials = false;
-            smtpClient.Credentials = new NetworkCredential(FromId, "Handsome2@");
+            smtpClient.Credentials = new NetworkCredential(FromId, "password");
 
             smtpClient.Send(_objMail);
         }
