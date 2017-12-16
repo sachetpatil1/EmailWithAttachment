@@ -1,5 +1,8 @@
 using System.Web.Mvc;
 using System.IO;
+using System.Net.Mail;
+using System.Net;
+using System.Text;
 
 [HttpPost]
 public ActionResult SendEmail()
@@ -7,11 +10,13 @@ public ActionResult SendEmail()
     try
     {
         System.Web.HttpFileCollectionBase files = Request.Files;
-        
+
         System.Net.Mail.MailMessage _objMail = new System.Net.Mail.MailMessage();
 
+        string FromId = "sachet.patil.7@gmail.com";
+
         // Set properties needed for the email
-        _objMail.From = new MailAddress(EmailFrom);
+        _objMail.From = new MailAddress(FromId);
 
         string[] ToId = Request.Params["EmailTo"].Split(';');
 
@@ -62,12 +67,19 @@ public ActionResult SendEmail()
                 buffer = ms.ToArray();
             }
 
-            System.Net.Mail.Attachment attach = new System.Net.Mail.Attachment(buffer, file.FileName);
+            System.Net.Mail.Attachment attach = new System.Net.Mail.Attachment(new MemoryStream(buffer),file.FileName);
             _objMail.Attachments.Add(attach);
         }
         // Set the mail object's smtpserver property
-        SmtpClient smtp = GetSmtp();
-        smtp.Send(_objMail);
+        using (SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587))
+        {
+            smtpClient.EnableSsl = true;
+            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+            smtpClient.UseDefaultCredentials = false;
+            smtpClient.Credentials = new NetworkCredential(FromId, "Handsome2@");
+
+            smtpClient.Send(_objMail);
+        }
         return Json("Mail sent Successfully!");
     }
     catch (Exception ex)
